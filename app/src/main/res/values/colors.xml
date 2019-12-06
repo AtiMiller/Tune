@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#9C27B0</color>
+    <color name="colorPrimaryDark">#7B1FA2</color>
+    <color name="colorAccent">#FF4081</color>
+    <color name="colorPrimaryLight">#E1BEE7</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorBlack">#212121</color>
+    <color name="colorGrey">#757575</color>
+    <color name="colorDivider">#BDBDBD</color>
+    <color name="transparent">#00ffffff</color>
+
+    //Color for slapshscreen gradient
+
+    <color name="startColor">#9B0031</color>
+    <color name="endColor">#6E099C</color>
+    
+    //Color for sound waves
+    <color name="one">#FFFFFF</color>
+    <color name="two">#BDBDBD</color>
+    <color name="three">#757575</color>
+    <color name="four">#212121</color>
+    <array name="waveColors">
+        <item>@color/one</item>
+        <item>@color/two</item>
+        <item>@color/three</item>
+        <item>@color/four</item>
+    </array>
+</resources>
