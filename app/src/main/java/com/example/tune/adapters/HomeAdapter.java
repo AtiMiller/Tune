@@ -20,10 +20,12 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tune.R;
-import com.example.tune.fragments.BottomBarFragment;
+//import com.example.tune.Song;
+import com.example.tune.fragments.BottomPlayerFragment;
 import com.example.tune.models.AllSongs;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder> {
 
@@ -99,12 +101,11 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
             public void onClick(View v) {
 
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
-                BottomBarFragment barFrag = new BottomBarFragment();
+                BottomPlayerFragment barFrag = new BottomPlayerFragment();
 
                 Bundle b = new Bundle();
                 b.putInt("songPosition", position);
                 b.putParcelableArrayList("songData", allSongs);
-                b.putByteArray("songImage", art);
                 barFrag.setArguments(b);
 
                 activity.getSupportFragmentManager().beginTransaction()
@@ -127,6 +128,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
 
     @Override
     public int getItemCount() {
+//        return songs.size();
         int limit = 9;
         if(allSongs.size() > limit){
             return limit;
@@ -154,7 +156,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.HomeViewHolder
         }
     }
 
-    private void sendData(){
+//    public void setSongs(List<Song> songs){
+//        this.songs = songs;
+//
+//    }
 
-    }
 }

@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tune.R;
-import com.example.tune.fragments.SongPlayingFragment;
+import com.example.tune.fragments.PlayerFragment;
 import com.example.tune.models.FavoriteSongs;
 
 import io.realm.Realm;
@@ -83,7 +83,7 @@ public class FavoriteAdapter extends RealmRecyclerViewAdapter<FavoriteSongs, Fav
             public void onClick(View v) {
 
                 AppCompatActivity activity = (AppCompatActivity) v.getContext();
-                SongPlayingFragment songFrag = new SongPlayingFragment();
+                PlayerFragment songFrag = new PlayerFragment();
 
                 Bundle b = new Bundle();
                 b.putString("favTitle", songTitle);

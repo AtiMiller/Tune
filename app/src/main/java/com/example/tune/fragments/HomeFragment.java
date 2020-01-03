@@ -2,6 +2,7 @@ package com.example.tune.fragments;
 
 
 import android.app.Activity;
+import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -17,6 +18,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,8 +40,11 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.tune.R;
+//import com.example.tune.Song;
+//import com.example.tune.SongViewModel;
 import com.example.tune.adapters.HomeAdapter;
 import com.example.tune.models.AllSongs;
 import com.example.tune.adapters.MainScreenAdapter;
@@ -46,6 +52,7 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -59,29 +66,6 @@ public class HomeFragment extends Fragment {
     private Button hOpenQue;
     private LinearLayout hPlayQueLinLay, hRecentlyPlayedLinLay, hNewlyAddedLinLay;
 
-    //Declarations for data
-    private ArrayList<AllSongs> hSongs;
-    private ContentResolver hResolver;
-    private Uri hUri;
-    private Cursor hCursor;
-    private HomeAdapter hAdapter;
-
-    //Declarations for the adapter
-    private GridLayoutManager hGridLayoutManager;
-
-    //Declarations for fragments
-    private FragmentManager hFragmentManager;
-    private HomeFragment hHome;
-
-    private RecyclerView recyclerView;
-//    private Activity myActivity;
-
-
-
-//    private MainScreenAdapter adapter;
-//    private LinearLayoutManager linearLayoutManager;
-
-
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -92,7 +76,15 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-//        setHasOptionsMenu(true);
+        setHasOptionsMenu(true);
+        fvb(view);
+        populateRecycler();
+        setUpViews();
+
+        return view;
+    }
+
+    private View fvb(View view){
 
         //FindVewByIds
         hPlayQueRV = view.findViewById(R.id.playQueRV);
@@ -106,22 +98,7 @@ public class HomeFragment extends Fragment {
         hPlayQueLinLay = view.findViewById(R.id.playQueLinLay);
         hRecentlyPlayedLinLay = view.findViewById(R.id.recentlyPlayedLinLay);
         hNewlyAddedLinLay = view.findViewById(R.id.newlyAddedLinLay);
-
-        hFragmentManager = getFragmentManager();
-        populateRecycler();
-        setUpViews();
-
         return view;
-    }
-
-    private void populateRecycler(){
-
-        hSongs = getSongsFromPhone();
-        hAdapter = new HomeAdapter(hSongs, getContext());
-        hGridLayoutManager = new GridLayoutManager(getActivity(), 3);
-        hNewlyAddedRV.setLayoutManager(hGridLayoutManager);
-        hNewlyAddedRV.setAdapter(hAdapter);
-
     }
 
     private void setUpViews(){
@@ -133,49 +110,32 @@ public class HomeFragment extends Fragment {
         hRecentlyPlayedLinLay.setVisibility(View.GONE);
     }
 
+    private void populateRecycler(){
 
-//    @Override
-//    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-//        super.onActivityCreated(savedInstanceState);
-//
-//        adapter = new MainScreenAdapter(hSongs, getContext());
-//        linearLayoutManager = new LinearLayoutManager(getActivity());
-//        recyclerView.setLayoutManager(linearLayoutManager);
-//        recyclerView.setAdapter(adapter);
-//
-//    }
+        ArrayList<AllSongs> hSongs = new ArrayList<>();
+        getSongsFromPhone(hSongs);
+        HomeAdapter hAdapter = new HomeAdapter(hSongs, getContext());
+        GridLayoutManager hGridLayoutManager = new GridLayoutManager(getActivity(), 3);
+        hNewlyAddedRV.setLayoutManager(hGridLayoutManager);
+        hNewlyAddedRV.setAdapter(hAdapter);
+    }
 
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        myActivity = (Activity) context;
-//    }
-//
-//    @Override
-//    public void onAttach(Activity activity) {
-//        super.onAttach(activity);
-//        myActivity = activity;
-//    }
-    
-
-    private ArrayList<AllSongs> getSongsFromPhone(){
+    private ArrayList<AllSongs> getSongsFromPhone(ArrayList<AllSongs> arrayList){
 
         String selectionMimeType = MediaStore.Files.FileColumns.MIME_TYPE + "=?";
         String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension("mp3");
         String[] selectionArgsMp3 = new String[]{ mimeType };
 
-        hSongs = new ArrayList<AllSongs>();
-        hResolver = getActivity().getContentResolver();
-        hUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-        hCursor = hResolver.query(hUri, null, selectionMimeType, selectionArgsMp3, null);
-        if(hCursor!=null && hCursor.moveToFirst()){
+        ContentResolver hResolver = getActivity().getContentResolver();
+        Uri hUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
+        Cursor hCursor = hResolver.query(hUri, null, selectionMimeType, selectionArgsMp3, null);
+        if(hCursor !=null && hCursor.moveToFirst()){
             //get columns
             int songId = hCursor.getColumnIndex(MediaStore.Audio.Media._ID);
             int songTitle = hCursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
             int songArtist = hCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST);
             int songData = hCursor.getColumnIndex(MediaStore.Audio.Media.DATA);
             int songDateAdded = hCursor.getColumnIndex(MediaStore.Audio.Media.DATE_ADDED);
-
             //add data to the array
             do {
                 long currentId = hCursor.getLong(songId);
@@ -184,11 +144,11 @@ public class HomeFragment extends Fragment {
                 String currentArtist = hCursor.getString(songArtist);
                 String currentData = hCursor.getString(songData);
 
-                hSongs.add(new AllSongs(currentId, currentDate, currentTitle, currentArtist, currentData));
+                arrayList.add(new AllSongs(currentId, currentDate, currentTitle, currentArtist, currentData));
             }
             while (hCursor.moveToNext());
         }
-        return hSongs;
+        return arrayList;
     }
 
     @Override

@@ -5,18 +5,16 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 
 import com.example.tune.R;
-import com.example.tune.fragments.BottomBarFragment;
+import com.example.tune.fragments.AllSongFragment;
+import com.example.tune.fragments.BottomPlayerFragment;
 import com.example.tune.fragments.FavoriteFragment;
 import com.example.tune.fragments.InfoFragment;
 import com.example.tune.fragments.HomeFragment;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.NestedScrollView;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.example.tune.fragments.SettingsFragment;
@@ -29,20 +27,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import org.w3c.dom.Attr;
-
-import java.util.jar.Attributes;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -60,13 +51,9 @@ public class HomeActivity extends AppCompatActivity {
     private NestedScrollView hNestedFrag;
 
 
-    private FragmentManager fragmentManager;
-    private HomeFragment main;
-    private FavoriteFragment favorite;
-    private SettingsFragment setting;
+    private FragmentManager fragmentManager = getSupportFragmentManager(); ;
     private InfoFragment info;
-    private BottomBarFragment bar;
-    private Fragment barFrag;
+    private BottomPlayerFragment bar;
 
     AppBarLayout.LayoutParams layoutParams;
 
@@ -76,53 +63,30 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drawer_layout);
 
-        fragmentManager = getSupportFragmentManager();
-
-        main = new HomeFragment();
-        favorite = new FavoriteFragment();
-        setting = new SettingsFragment();
-        info = new InfoFragment();
-        bar = new BottomBarFragment();
-
         viewInit();
         navView();
         toolbarView();
-
-
-
     }
 
     private void viewInit(){
 
-        //FindViews by IDs
         hDrawer = findViewById(R.id.drawer_layout_m);
         hNavigationView = findViewById(R.id.nav_view);
         hAppBarLayout = findViewById(R.id.home_appbar);
         hCToolbar = findViewById(R.id.collapsing_toolbar);
         hToolbar = findViewById(R.id.toolbar_home);
     }
+
     private void navView(){
+
         hNavigationView.setItemIconTintList(null);
         hNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 switch (menuItem.getItemId()){
                     case R.id.nav_home:
-                        fragmentManager.beginTransaction()
-                                .replace(R.id.container_fragment, main, "HomeFargment")
-                                .commit();
-                        hDrawer.closeDrawer(Gravity.LEFT);
 
-
-
-                        AppBarLayout app = (AppBarLayout) findViewById(R.id.home_appbar);
-                        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) app.getLayoutParams();
-                        layoutParams.height = AppBarLayout.LayoutParams.WRAP_CONTENT;
-                        /*^This code will lock the toolbar for another */
-
-                        hCToolbar.setTitleEnabled(false);
-                        hToolbar.setTitle("FragmentActivity Title");
-
+                            openHome();
 //                        CollapsingToolbarLayout collapsingToolbar = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
 //                        CollapsingToolbarLayout.LayoutParams layoutParams=new CollapsingToolbarLayout.LayoutParams(AppBarLayout.LayoutParams.MATCH_PARENT, AppBarLayout.LayoutParams.WRAP_CONTENT );
 
@@ -159,25 +123,19 @@ public class HomeActivity extends AppCompatActivity {
                         Toast.makeText(HomeActivity.this, "Clicked on the Playlist", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_song:
-                        allSongs();
+                        openAllSongs();
                         break;
                     case R.id.nav_genres:
                         Toast.makeText(HomeActivity.this, "Clicked on Genres", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_favorite:
-                        fragmentManager.beginTransaction()
-                                .replace(R.id.container_fragment, favorite)
-                                .commit();
-                        hDrawer.closeDrawer(Gravity.LEFT);
+                        openFavorite();
                         break;
                     case R.id.nav_account:
                         Toast.makeText(HomeActivity.this, "Clicked on Account", Toast.LENGTH_SHORT).show();
                         break;
                     case R.id.nav_settings:
-                        fragmentManager.beginTransaction()
-                                .replace(R.id.container_fragment, setting)
-                                .commit();
-                        hDrawer.closeDrawer(Gravity.LEFT);
+                        openSetting();
                         break;
                     case R.id.nav_info:
                         fragmentManager.beginTransaction()
@@ -195,6 +153,58 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+    private void openHome(){
+
+        final HomeFragment main = new HomeFragment();
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.container_fragment, main, "HomeFargment")
+                .commit();
+        hDrawer.closeDrawer(Gravity.LEFT);
+
+        lockToolbar();
+        hCToolbar.setTitleEnabled(false);
+        hToolbar.setTitle("FragmentActivity Title");
+    }
+
+    private void openFavorite(){
+
+        FavoriteFragment favorite = new FavoriteFragment();
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.container_fragment, favorite)
+                .commit();
+        hDrawer.closeDrawer(Gravity.LEFT);
+    }
+
+    private void  openSetting(){
+
+        SettingsFragment setting = new SettingsFragment();
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.container_fragment, setting)
+                .commit();
+        hDrawer.closeDrawer(Gravity.LEFT);
+    }
+
+    private void openAllSongs(){
+
+        AllSongFragment allSong = new AllSongFragment();
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.container_fragment, allSong)
+                .commit();
+        hDrawer.closeDrawer(Gravity.LEFT);
+    }
+
+    private void lockToolbar(){
+
+        AppBarLayout app = (AppBarLayout) findViewById(R.id.home_appbar);
+        CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) app.getLayoutParams();
+        layoutParams.height = AppBarLayout.LayoutParams.WRAP_CONTENT;
+        /*^This code will lock the toolbar for another */
+    }
+
 
 
     private void toolbarView(){
@@ -209,13 +219,7 @@ public class HomeActivity extends AppCompatActivity {
 //        AppBarLayout.LayoutParams layoutParams=new AppBarLayout.LayoutParams(AppBarLayout.LayoutParams.MATCH_PARENT, actionBarHeight );
 //        hAppBarLayout.setLayoutParams(layoutParams);
 
-
-
         hToolbar.setNavigationIcon(R.drawable.navigation_icon);
-
-//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//        getSupportActionBar().setHomeButtonEnabled(true);
-//        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         hToolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -235,18 +239,6 @@ public class HomeActivity extends AppCompatActivity {
         hCToolbar.setExpandedTitleTypeface(typeface);
         hCToolbar.setCollapsedTitleTypeface(typeface);
 
-    }
-
-    private void allSongs(){
-        fragmentManager.beginTransaction()
-                .replace(R.id.container_fragment, main)
-                .commit();
-        hDrawer.closeDrawer(Gravity.LEFT);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
     }
 
 

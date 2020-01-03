@@ -7,16 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tune.R;
-import com.example.tune.fragments.BottomBarFragment;
+import com.example.tune.fragments.BottomPlayerFragment;
 import com.example.tune.models.AllSongs;
-import com.example.tune.fragments.SongPlayingFragment;
+import com.example.tune.fragments.PlayerFragment;
 
 import java.util.ArrayList;
 
@@ -54,8 +53,8 @@ public class MainScreenAdapter extends RecyclerView.Adapter<MainScreenAdapter.My
             public void onClick(View view) {
 
                 AppCompatActivity activity = (AppCompatActivity) view.getContext();
-                SongPlayingFragment songFrag = new SongPlayingFragment();
-                BottomBarFragment barFrag = new BottomBarFragment();
+                PlayerFragment songFrag = new PlayerFragment();
+                BottomPlayerFragment barFrag = new BottomPlayerFragment();
 
                 Bundle b = new Bundle();
                 b.putInt("songPosition", position);
