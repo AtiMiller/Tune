@@ -153,6 +153,8 @@ public class HomeActivity extends AppCompatActivity {
 
     }
 
+    //S
+
     private void openHome(){
 
         final HomeFragment main = new HomeFragment();
